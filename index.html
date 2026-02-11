@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AgentVault Demo</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root {
+  --bg: #080D18; --surface: #0F1724; --card: #151E2F;
+  --border: #1E2D42; --border-hover: #2A4060;
+  --cyan: #00E5FF; --cyan-dim: rgba(0,229,255,0.15);
+  --green: #00FF88; --green-dim: rgba(0,255,136,0.12);
+  --red: #FF4C6A; --red-dim: rgba(255,76,106,0.12);
+  --yellow: #FFD740; --yellow-dim: rgba(255,215,64,0.12);
+  --purple: #B388FF; --purple-dim: rgba(179,136,255,0.12);
+  --text: #E8ECF2; --text-sec: #7B8FA3; --text-muted: #4A5B6E;
+}
+body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system-ui, sans-serif; min-height: 100vh; }
+.mono { font-family: 'JetBrains Mono', monospace; }
+
+/* Header */
+.header {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 14px 28px; border-bottom: 1px solid var(--border);
+  background: rgba(8,13,24,0.95); position: sticky; top: 0; z-index: 100;
+}
+.logo { display: flex; align-items: center; gap: 10px; }
+.logo-icon { font-size: 22px; color: var(--cyan); font-weight: 800; }
+.logo-text { font-size: 17px; font-weight: 700; color: var(--text); }
+
+/* Badges */
+.badge {
+  display: inline-block; padding: 3px 10px; border-radius: 20px;
+  font-size: 11px; font-weight: 600; letter-spacing: 0.5px;
+}
+
+/* Buttons */
+.btn {
+  padding: 10px 22px; border-radius: 8px; border: none; font-size: 13px;
+  cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px; font-family: inherit;
+}
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.btn-primary { background: var(--cyan); color: var(--bg); font-weight: 700; }
+.btn-secondary { background: transparent; color: var(--cyan); border: 1px solid var(--cyan); }
+.btn-danger { background: transparent; color: var(--red); border: 1px solid var(--red); }
+.btn-ghost { background: transparent; color: var(--text-sec); border: none; }
+.btn:hover { opacity: 0.85; }
+.btn-primary:hover { opacity: 0.9; box-shadow: 0 0 20px rgba(0,229,255,0.2); }
+
+/* Layout */
+.layout { display: flex; min-height: calc(100vh - 57px); }
+.sidebar {
+  width: 200px; padding: 20px 12px; border-right: 1px solid var(--border);
+  background: var(--surface); flex-shrink: 0;
+}
+.main { flex: 1; padding: 32px; max-width: 960px; overflow: auto; }
+
+/* Nav */
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 14px;
+  border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-sec);
+  transition: all 0.15s; margin-bottom: 4px;
+}
+.nav-item:hover { color: var(--text); background: rgba(255,255,255,0.03); }
+.nav-item.active { color: var(--cyan); background: var(--cyan-dim); font-weight: 600; }
+.nav-icon { font-size: 16px; }
+
+/* Cards */
+.card {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 24px; margin-bottom: 14px;
+}
+
+/* Stats */
+.stats-row { display: flex; gap: 14px; margin-bottom: 28px; flex-wrap: wrap; }
+.stat-box {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: 10px; padding: 18px 20px; flex: 1; min-width: 140px;
+}
+.stat-label { font-size: 11px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.stat-value { font-size: 22px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+.stat-sub { font-size: 11px; color: var(--text-sec); margin-top: 4px; }
+
+/* Forms */
+.form-label { font-size: 11px; color: var(--text-sec); display: block; margin-bottom: 6px; }
+.form-input, .form-select {
+  width: 100%; padding: 10px 12px; border-radius: 8px;
+  border: 1px solid var(--border); background: var(--surface);
+  color: var(--text); font-size: 13px; font-family: inherit;
+}
+.form-input:focus, .form-select:focus { outline: none; border-color: var(--cyan); }
+
+/* Grid header */
+.grid-header {
+  display: grid; padding: 8px 12px; font-size: 10px; color: var(--text-muted);
+  text-transform: uppercase; letter-spacing: 0.8px;
+}
+
+/* Token rows */
+.token-row {
+  display: grid; grid-template-columns: 2fr 1fr 1fr 80px;
+  padding: 14px 12px; border-radius: 8px; align-items: center;
+}
+.token-row:nth-child(even) { background: rgba(255,255,255,0.015); }
+
+/* Safety box */
+.safety-box {
+  margin-top: 32px; padding: 16px 14px; border-radius: 10px;
+  background: var(--card); border: 1px solid var(--border);
+}
+
+/* Agent card */
+.agent-grid { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 14px; }
+.agent-meta { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 4px; }
+.progress-bar { margin-top: 6px; height: 3px; border-radius: 2px; background: var(--surface); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: 2px; }
+
+/* Activity table */
+.activity-row {
+  display: grid; grid-template-columns: 130px 55px 140px 120px 75px 85px 75px 80px;
+  padding: 14px 12px; font-size: 13px; align-items: center;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Role picker */
+.role-option {
+  flex: 1; padding: 14px 16px; border-radius: 10px; cursor: pointer;
+  border: 1px solid var(--border); background: var(--surface); transition: all 0.2s;
+}
+.role-option.active { border-color: var(--cyan); background: var(--cyan-dim); }
+.role-title { font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+.role-desc { font-size: 10px; color: var(--text-muted); }
+
+/* Token picker */
+.token-pick {
+  padding: 8px 16px; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+  border: 1px solid var(--border); background: var(--surface); color: var(--text-sec);
+  font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 8px;
+}
+.token-pick.active { border-color: var(--green); background: var(--green-dim); color: var(--green); }
+
+/* Alert boxes */
+.alert-yellow {
+  padding: 12px 16px; border-radius: 8px; background: var(--yellow-dim);
+  border: 1px solid rgba(255,215,64,0.2); font-size: 12px; color: var(--yellow);
+}
+.alert-cyan {
+  padding: 16px 20px; border-radius: 10px; background: var(--cyan-dim);
+  border: 1px solid rgba(0,229,255,0.2); font-size: 13px; color: var(--cyan); line-height: 1.6;
+}
+
+/* Steps */
+.steps-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 28px; }
+.step-card { text-align: center; padding: 28px 20px; }
+.step-num { font-size: 11px; color: var(--cyan); font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 8px; }
+.step-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 8px; }
+.step-desc { font-size: 12px; color: var(--text-sec); line-height: 1.6; }
+
+/* Safety layers */
+.layer-row {
+  display: flex; gap: 14px; padding: 14px 16px; border-radius: 8px;
+  background: var(--surface); border: 1px solid var(--border); margin-bottom: 8px;
+}
+.layer-num {
+  width: 28px; height: 28px; border-radius: 6px; display: flex; align-items: center;
+  justify-content: center; background: var(--green-dim); color: var(--green);
+  font-size: 13px; font-weight: 700; flex-shrink: 0;
+}
+
+/* Code block */
+.code-block {
+  background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+  padding: 20px; overflow: auto; font-size: 12px; line-height: 1.7;
+  color: var(--text-sec); font-family: 'JetBrains Mono', monospace; white-space: pre;
+}
+
+/* Landing */
+.landing {
+  display: flex; flex-direction: column; align-items: center;
+  justify-content: center; height: 60vh; text-align: center;
+}
+.landing h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+.landing p { font-size: 15px; color: var(--text-sec); max-width: 440px; line-height: 1.6; margin-bottom: 28px; }
+.features { display: flex; gap: 32px; margin-top: 40px; }
+.feature { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-muted); }
+.feature .check { color: var(--green); }
+
+.page { display: none; }
+.page.active { display: block; }
+
+.deposit-panel { display: none; margin-bottom: 20px; }
+.deposit-panel.show { display: block; }
+.add-agent-panel { display: none; margin-bottom: 20px; }
+.add-agent-panel.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="logo">
+    <span class="logo-icon">◈</span>
+    <span class="logo-text">AgentVault</span>
+    <span class="badge" style="color: var(--yellow); background: var(--yellow-dim);">Demo</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <span id="wallet-addr" class="mono" style="font-size:12px;color:var(--text-sec);display:none;">0x7a3B...4f2D</span>
+    <button class="btn btn-primary btn-sm" id="connect-btn" onclick="toggleWallet()">Connect Wallet</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <div id="nav-items">
+      <div class="nav-item active" data-page="vault" onclick="switchPage('vault')">
+        <span class="nav-icon">◈</span> Vault
+      </div>
+      <div class="nav-item" data-page="permissions" onclick="switchPage('permissions')">
+        <span class="nav-icon">⊙</span> Permissions
+      </div>
+      <div class="nav-item" data-page="activity" onclick="switchPage('activity')">
+        <span class="nav-icon">↻</span> Activity
+      </div>
+      <div class="nav-item" data-page="docs" onclick="switchPage('docs')">
+        <span class="nav-icon">⟐</span> Integration
+      </div>
+    </div>
+    <div class="safety-box">
+      <div style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Safety Status</div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+          <span style="color:var(--green);font-size:8px;">●</span><span style="color:var(--text-sec);">Whitelist Active</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+          <span style="color:var(--green);font-size:8px;">●</span><span style="color:var(--text-sec);">Limits Enforced</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;font-size:11px;">
+          <span style="color:var(--green);font-size:8px;">●</span><span style="color:var(--text-sec);">2 Agents Live</span>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- LANDING (before wallet connect) -->
+    <div id="landing" class="landing">
+      <div style="font-size:48px;margin-bottom:20px;">◈</div>
+      <h1>AgentVault</h1>
+      <p>Non-custodial infrastructure for AI agents to trade on-chain without holding private keys. Safety enforced at the contract layer.</p>
+      <button class="btn btn-primary" style="font-size:15px;padding:14px 36px;" onclick="toggleWallet()">Connect Wallet to Start</button>
+      <div class="features">
+        <div class="feature"><span class="check">✓</span> Token Whitelists</div>
+        <div class="feature"><span class="check">✓</span> Spending Limits</div>
+        <div class="feature"><span class="check">✓</span> Auto-Expiration</div>
+        <div class="feature"><span class="check">✓</span> Competitive Solvers</div>
+      </div>
+    </div>
+
+    <!-- APP CONTENT (after wallet connect) -->
+    <div id="app-content" style="display:none;">
+
+      <!-- ═══ VAULT PAGE ═══ -->
+      <div id="page-vault" class="page active">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;">Vault Overview</h2>
+            <p style="margin-top:4px;font-size:13px;color:var(--text-sec);">Your non-custodial agent trading vault</p>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn btn-primary" onclick="toggleDeposit()">Deposit</button>
+            <button class="btn btn-secondary">Withdraw</button>
+          </div>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-label">Total Balance</div><div class="stat-value" style="color:var(--cyan);">$153,912</div></div>
+          <div class="stat-box"><div class="stat-label">Active Agents</div><div class="stat-value" style="color:var(--green);">2</div><div class="stat-sub">1 expired</div></div>
+          <div class="stat-box"><div class="stat-label">Today's Volume</div><div class="stat-value" style="color:var(--purple);">$16,320</div><div class="stat-sub">7 orders</div></div>
+          <div class="stat-box"><div class="stat-label">Surplus Captured</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Last 24h</div></div>
+        </div>
+
+        <!-- Deposit Panel -->
+        <div id="deposit-panel" class="deposit-panel">
+          <div class="card" style="border-color:var(--cyan);">
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+              <span style="font-size:14px;font-weight:600;">Deposit to Vault</span>
+              <span style="font-size:11px;color:var(--text-muted);cursor:pointer;" onclick="toggleDeposit()">✕ Close</span>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap;">
+              <div style="flex:1;min-width:120px;">
+                <label class="form-label">Token</label>
+                <select class="form-select"><option>ETH</option><option>USDC</option><option>WBTC</option><option>DAI</option></select>
+              </div>
+              <div style="flex:1;min-width:120px;">
+                <label class="form-label">Amount</label>
+                <input class="form-input" placeholder="0.00">
+              </div>
+              <button class="btn btn-primary">Confirm Deposit</button>
+            </div>
+            <div style="margin-top:12px;font-size:11px;color:var(--text-muted);">
+              Funds remain non-custodial. Only you can withdraw. Agents can only create orders within their permissions.
+            </div>
+          </div>
+        </div>
+
+        <!-- Token List -->
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;margin-bottom:18px;">Vault Assets</div>
+          <div class="grid-header" style="grid-template-columns:2fr 1fr 1fr 80px;">
+            <span>Asset</span><span style="text-align:right;">Balance</span><span style="text-align:right;">USD Value</span><span></span>
+          </div>
+          <div class="token-row">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;color:#627EEA;width:28px;text-align:center;">◆</span>
+              <div><div style="font-size:14px;font-weight:600;">ETH</div><div style="font-size:11px;color:var(--text-sec);">Ethereum</div></div>
+            </div>
+            <div style="text-align:right;" class="mono" style="font-size:13px;">12.4500</div>
+            <div style="text-align:right;color:var(--text-sec);" class="mono">$41,262.00</div>
+            <div style="text-align:right;"><button class="btn btn-ghost btn-sm">Details</button></div>
+          </div>
+          <div class="token-row">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;color:#2775CA;width:28px;text-align:center;">◉</span>
+              <div><div style="font-size:14px;font-weight:600;">USDC</div><div style="font-size:11px;color:var(--text-sec);">USD Coin</div></div>
+            </div>
+            <div style="text-align:right;" class="mono">24,500.00</div>
+            <div style="text-align:right;color:var(--text-sec);" class="mono">$24,500.00</div>
+            <div style="text-align:right;"><button class="btn btn-ghost btn-sm">Details</button></div>
+          </div>
+          <div class="token-row">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;color:#F7931A;width:28px;text-align:center;">◈</span>
+              <div><div style="font-size:14px;font-weight:600;">WBTC</div><div style="font-size:11px;color:var(--text-sec);">Wrapped Bitcoin</div></div>
+            </div>
+            <div style="text-align:right;" class="mono">0.8200</div>
+            <div style="text-align:right;color:var(--text-sec);" class="mono">$79,950.00</div>
+            <div style="text-align:right;"><button class="btn btn-ghost btn-sm">Details</button></div>
+          </div>
+          <div class="token-row">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <span style="font-size:20px;color:#F5AC37;width:28px;text-align:center;">◇</span>
+              <div><div style="font-size:14px;font-weight:600;">DAI</div><div style="font-size:11px;color:var(--text-sec);">Dai</div></div>
+            </div>
+            <div style="text-align:right;" class="mono">8,200.00</div>
+            <div style="text-align:right;color:var(--text-sec);" class="mono">$8,200.00</div>
+            <div style="text-align:right;"><button class="btn btn-ghost btn-sm">Details</button></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ PERMISSIONS PAGE ═══ -->
+      <div id="page-permissions" class="page">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;">
+          <div>
+            <h2 style="font-size:20px;font-weight:700;">Agent Permissions</h2>
+            <p style="margin-top:4px;font-size:13px;color:var(--text-sec);">Manage which agents can access your vault and what they can do</p>
+          </div>
+          <button class="btn btn-primary" onclick="toggleAddAgent()">+ Add Agent</button>
+        </div>
+
+        <!-- Add Agent Panel -->
+        <div id="add-agent-panel" class="add-agent-panel">
+          <div class="card" style="border-color:var(--cyan);">
+            <div style="font-size:14px;font-weight:600;margin-bottom:20px;">Authorize New Agent</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+              <div><label class="form-label">Agent Name</label><input class="form-input" placeholder="e.g. DCA Bot"></div>
+              <div><label class="form-label">Agent Wallet Address</label><input class="form-input" placeholder="0x..."></div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <label class="form-label" style="margin-bottom:10px;">Role</label>
+              <div style="display:flex;gap:10px;">
+                <div class="role-option" onclick="selectRole(this)">
+                  <div class="role-title" style="color:var(--text);">View Only</div>
+                  <div class="role-desc">Read balances only</div>
+                </div>
+                <div class="role-option active" onclick="selectRole(this)">
+                  <div class="role-title" style="color:var(--cyan);">Trade Only</div>
+                  <div class="role-desc">Create orders, no withdrawals</div>
+                </div>
+                <div class="role-option" onclick="selectRole(this)">
+                  <div class="role-title" style="color:var(--text);">Trade + Rebalance</div>
+                  <div class="role-desc">Higher limits, no withdrawals</div>
+                </div>
+              </div>
+            </div>
+            <div style="margin-bottom:20px;">
+              <label class="form-label" style="margin-bottom:10px;">Allowed Tokens</label>
+              <div style="display:flex;gap:8px;flex-wrap:wrap;">
+                <div class="token-pick" onclick="toggleTokenPick(this)"><span style="color:#627EEA;">◆</span> ETH</div>
+                <div class="token-pick active" onclick="toggleTokenPick(this)"><span style="color:#2775CA;">◉</span> USDC ✓</div>
+                <div class="token-pick" onclick="toggleTokenPick(this)"><span style="color:#F7931A;">◈</span> WBTC</div>
+                <div class="token-pick" onclick="toggleTokenPick(this)"><span style="color:#F5AC37;">◇</span> DAI</div>
+              </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px;">
+              <div><label class="form-label">Daily Spending Limit (USD)</label><input class="form-input" placeholder="e.g. 5000"></div>
+              <div><label class="form-label">Expiration Date</label><input class="form-input" type="date"></div>
+            </div>
+            <div class="alert-yellow" style="margin-bottom:20px;">
+              This agent will be able to create orders for the selected tokens up to the daily limit. It cannot withdraw funds, modify the whitelist, or change permissions. Access auto-revokes on the expiration date.
+            </div>
+            <div style="display:flex;gap:10px;justify-content:flex-end;">
+              <button class="btn btn-ghost" onclick="toggleAddAgent()">Cancel</button>
+              <button class="btn btn-primary">Authorize Agent</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agent: DCA Bot Alpha -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dim);font-size:18px;">🤖</div>
+              <div>
+                <div style="font-size:15px;font-weight:600;">DCA Bot Alpha</div>
+                <div style="font-size:12px;color:var(--text-muted);" class="mono">0x7a3B...9f2E</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <span class="badge" style="color:var(--green);background:var(--green-dim);">● Active</span>
+              <span class="badge" style="color:var(--purple);background:var(--purple-dim);">Trade Only</span>
+            </div>
+          </div>
+          <div class="agent-grid">
+            <div>
+              <div class="agent-meta">Allowed Tokens</div>
+              <div style="display:flex;gap:4px;">
+                <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);">ETH</span>
+                <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);">USDC</span>
+              </div>
+            </div>
+            <div>
+              <div class="agent-meta">Daily Limit</div>
+              <div style="font-size:14px;font-weight:600;" class="mono">$5,000</div>
+            </div>
+            <div>
+              <div class="agent-meta">Spent Today</div>
+              <div style="font-size:14px;font-weight:600;color:var(--green);" class="mono">$2,340</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:46.8%;background:var(--green);"></div></div>
+            </div>
+            <div>
+              <div class="agent-meta">Expires</div>
+              <div style="font-size:13px;color:var(--text-sec);">2026-03-15</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+            <button class="btn btn-ghost btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm">Revoke</button>
+          </div>
+        </div>
+
+        <!-- Agent: Rebalancer v2 -->
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dim);font-size:18px;">🤖</div>
+              <div>
+                <div style="font-size:15px;font-weight:600;">Rebalancer v2</div>
+                <div style="font-size:12px;color:var(--text-muted);" class="mono">0x4cD1...8a7F</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <span class="badge" style="color:var(--green);background:var(--green-dim);">● Active</span>
+              <span class="badge" style="color:var(--purple);background:var(--purple-dim);">Trade + Rebalance</span>
+            </div>
+          </div>
+          <div class="agent-grid">
+            <div>
+              <div class="agent-meta">Allowed Tokens</div>
+              <div style="display:flex;gap:4px;">
+                <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);">ETH</span>
+                <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);">USDC</span>
+                <span style="padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;background:var(--surface);border:1px solid var(--border);">WBTC</span>
+              </div>
+            </div>
+            <div>
+              <div class="agent-meta">Daily Limit</div>
+              <div style="font-size:14px;font-weight:600;" class="mono">$15,000</div>
+            </div>
+            <div>
+              <div class="agent-meta">Spent Today</div>
+              <div style="font-size:14px;font-weight:600;color:var(--yellow);" class="mono">$8,720</div>
+              <div class="progress-bar"><div class="progress-fill" style="width:58.1%;background:var(--yellow);"></div></div>
+            </div>
+            <div>
+              <div class="agent-meta">Expires</div>
+              <div style="font-size:13px;color:var(--text-sec);">2026-04-01</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:16px;justify-content:flex-end;">
+            <button class="btn btn-ghost btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm">Revoke</button>
+          </div>
+        </div>
+
+        <!-- Agent: Yield Harvester (expired) -->
+        <div class="card" style="opacity:0.6;">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
+            <div style="display:flex;align-items:center;gap:14px;">
+              <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--red-dim);font-size:18px;">⏸</div>
+              <div>
+                <div style="font-size:15px;font-weight:600;">Yield Harvester</div>
+                <div style="font-size:12px;color:var(--text-muted);" class="mono">0x9eF2...3b1A</div>
+              </div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <span class="badge" style="color:var(--red);background:var(--red-dim);">● Expired</span>
+              <span class="badge" style="color:var(--purple);background:var(--purple-dim);">View Only</span>
+            </div>
+          </div>
+          <div class="agent-grid">
+            <div><div class="agent-meta">Allowed Tokens</div><div style="font-size:11px;color:var(--text-muted);">None</div></div>
+            <div><div class="agent-meta">Daily Limit</div><div style="font-size:14px;font-weight:600;" class="mono">$0</div></div>
+            <div><div class="agent-meta">Spent Today</div><div style="font-size:14px;font-weight:600;color:var(--text-muted);" class="mono">$0</div></div>
+            <div><div class="agent-meta">Expires</div><div style="font-size:13px;color:var(--red);">2026-02-28</div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ ACTIVITY PAGE ═══ -->
+      <div id="page-activity" class="page">
+        <div style="margin-bottom:28px;">
+          <h2 style="font-size:20px;font-weight:700;">Activity Feed</h2>
+          <p style="margin-top:4px;font-size:13px;color:var(--text-sec);">All orders created by your authorized agents</p>
+        </div>
+
+        <div class="stats-row">
+          <div class="stat-box"><div class="stat-label">Orders (24h)</div><div class="stat-value" style="color:var(--cyan);">7</div></div>
+          <div class="stat-box"><div class="stat-label">Filled</div><div class="stat-value" style="color:var(--green);">5</div></div>
+          <div class="stat-box"><div class="stat-label">Pending</div><div class="stat-value" style="color:var(--yellow);">1</div></div>
+          <div class="stat-box"><div class="stat-label">Total Surplus</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Saved vs. direct DEX</div></div>
+        </div>
+
+        <div class="card" style="padding:0;overflow-x:auto;">
+          <div style="min-width:760px;">
+            <div class="activity-row" style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border);padding:14px 12px;">
+              <span>Agent</span><span>Action</span><span>From</span><span>To</span><span>Status</span><span>Solver</span><span>Surplus</span><span>Time</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7512 ETH</span>
+              <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$12.40</span>
+              <span style="font-size:11px;color:var(--text-muted);">2 min ago</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">0.25 WBTC</span><span class="mono" style="font-size:12px;">8,125 USDC</span>
+              <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">Wintermute</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$34.80</span>
+              <span style="font-size:11px;color:var(--text-muted);">18 min ago</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7480 ETH</span>
+              <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$8.20</span>
+              <span style="font-size:11px;color:var(--text-muted);">1 hr ago</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">5,000 USDC</span><span class="mono" style="font-size:12px;">0.0628 WBTC</span>
+              <span><span class="badge" style="color:var(--yellow);background:var(--yellow-dim);">Pending</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">—</span>
+              <span class="mono" style="font-size:12px;color:var(--text-muted);">—</span>
+              <span style="font-size:11px;color:var(--text-muted);">3 min ago</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">1,000 USDC</span><span class="mono" style="font-size:12px;">ETH</span>
+              <span><span class="badge" style="color:var(--red);background:var(--red-dim);">Expired</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">—</span>
+              <span class="mono" style="font-size:12px;color:var(--text-muted);">—</span>
+              <span style="font-size:11px;color:var(--text-muted);">2 hr ago</span>
+            </div>
+            <div class="activity-row">
+              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">3,200 DAI</span><span class="mono" style="font-size:12px;">3,195 USDC</span>
+              <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$2.10</span>
+              <span style="font-size:11px;color:var(--text-muted);">4 hr ago</span>
+            </div>
+            <div class="activity-row" style="border-bottom:none;">
+              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7601 ETH</span>
+              <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
+              <span style="font-size:12px;color:var(--text-sec);">Wintermute</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$18.90</span>
+              <span style="font-size:11px;color:var(--text-muted);">6 hr ago</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══ DOCS PAGE ═══ -->
+      <div id="page-docs" class="page">
+        <div style="margin-bottom:28px;">
+          <h2 style="font-size:20px;font-weight:700;">Agent Integration</h2>
+          <p style="margin-top:4px;font-size:13px;color:var(--text-sec);">Connect your AI agent to AgentVault in minutes</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="card step-card">
+            <div style="font-size:28px;margin-bottom:12px;">🔑</div>
+            <div class="step-num">Step 1</div>
+            <div class="step-title">Get Authorized</div>
+            <div class="step-desc">Vault owner adds your agent's wallet address and sets token whitelist, spending limits, and expiration.</div>
+          </div>
+          <div class="card step-card">
+            <div style="font-size:28px;margin-bottom:12px;">✍️</div>
+            <div class="step-num">Step 2</div>
+            <div class="step-title">Sign Order Intents</div>
+            <div class="step-desc">Your agent signs EIP-712 typed data specifying the trade. No private key access to the vault needed.</div>
+          </div>
+          <div class="card step-card">
+            <div style="font-size:28px;margin-bottom:12px;">⚡</div>
+            <div class="step-num">Step 3</div>
+            <div class="step-title">Solvers Fill</div>
+            <div class="step-desc">Competitive solvers execute the order at the best available price. Surplus is split back to the vault.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+            <span style="font-size:14px;font-weight:600;">Quick Start: Create an Order</span>
+            <span class="badge" style="color:var(--cyan);background:var(--cyan-dim);">TypeScript</span>
+          </div>
+          <div class="code-block">import { ethers } from "ethers";
+
+// Your agent's wallet (no vault access, just signing)
+const agentWallet = new ethers.Wallet(AGENT_PRIVATE_KEY);
+
+// Build the order intent
+const order = {
+  organizationId: VAULT_ORG_ID,
+  sellToken: USDC_ADDRESS,
+  sellAmount: ethers.parseUnits("2500", 6),
+  buyToken: WETH_ADDRESS,
+  minBuyAmount: ethers.parseUnits("0.74", 18),
+  expiration: Math.floor(Date.now() / 1000) + 3600,
+  nonce: Date.now(),
+};
+
+// Sign EIP-712 typed data
+const signature = await agentWallet.signTypedData(
+  domain, types, order
+);
+
+// Submit to AgentVault
+const tx = await assetManager.createOrderBySig(
+  order, signature
+);
+// Solvers compete to fill. You're done.</div>
+        </div>
+
+        <div class="card">
+          <div style="font-size:14px;font-weight:600;margin-bottom:16px;">5 Layers of Safety</div>
+          <div class="layer-row"><div class="layer-num">1</div><div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Master Token Whitelist</div><div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Only pre-approved tokens are tradeable system-wide. The contract reverts any order for a non-whitelisted token.</div></div></div>
+          <div class="layer-row"><div class="layer-num">2</div><div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Per-Agent Token Selection</div><div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Vault owner restricts which whitelisted tokens each specific agent can trade. Agent A might only get ETH and USDC.</div></div></div>
+          <div class="layer-row"><div class="layer-num">3</div><div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Spending Limits</div><div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Maximum amount per token per time window, enforced on-chain. Exceeding the limit reverts the transaction.</div></div></div>
+          <div class="layer-row"><div class="layer-num">4</div><div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Role-Based Permissions</div><div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Agents can create orders but cannot withdraw, modify whitelists, or change permissions. Separation of concerns.</div></div></div>
+          <div class="layer-row"><div class="layer-num">5</div><div><div style="font-size:13px;font-weight:600;margin-bottom:2px;">Auto-Expiration</div><div style="font-size:12px;color:var(--text-sec);line-height:1.5;">Agent access automatically revokes after the owner-set time period. No manual cleanup needed.</div></div></div>
+        </div>
+
+        <div class="alert-cyan">
+          <strong>Key insight:</strong> A fully compromised agent (prompt injection, model failure, API key stolen) can only make bad trades within its budget on whitelisted tokens. It cannot drain the vault. The invalid action simply reverts.
+        </div>
+      </div>
+
+    </div><!-- end app-content -->
+  </main>
+</div>
+
+<script>
+let connected = false;
+
+function toggleWallet() {
+  connected = !connected;
+  const btn = document.getElementById('connect-btn');
+  const addr = document.getElementById('wallet-addr');
+  const landing = document.getElementById('landing');
+  const app = document.getElementById('app-content');
+
+  if (connected) {
+    btn.textContent = '● Connected';
+    btn.className = 'btn btn-secondary btn-sm';
+    addr.style.display = 'inline';
+    landing.style.display = 'none';
+    app.style.display = 'block';
+  } else {
+    btn.textContent = 'Connect Wallet';
+    btn.className = 'btn btn-primary btn-sm';
+    addr.style.display = 'none';
+    landing.style.display = 'flex';
+    app.style.display = 'none';
+  }
+}
+
+function switchPage(pageId) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + pageId).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelector('[data-page="' + pageId + '"]').classList.add('active');
+}
+
+function toggleDeposit() {
+  const panel = document.getElementById('deposit-panel');
+  panel.classList.toggle('show');
+}
+
+function toggleAddAgent() {
+  const panel = document.getElementById('add-agent-panel');
+  panel.classList.toggle('show');
+}
+
+function selectRole(el) {
+  document.querySelectorAll('.role-option').forEach(r => {
+    r.classList.remove('active');
+    r.querySelector('.role-title').style.color = 'var(--text)';
+  });
+  el.classList.add('active');
+  el.querySelector('.role-title').style.color = 'var(--cyan)';
+}
+
+function toggleTokenPick(el) {
+  el.classList.toggle('active');
+  const sym = el.textContent.trim().replace(' ✓', '');
+  if (el.classList.contains('active')) {
+    if (!el.textContent.includes('✓')) el.innerHTML = el.innerHTML + ' ✓';
+  } else {
+    el.innerHTML = el.innerHTML.replace(' ✓', '');
+  }
+}
+</script>
+</body>
+</html>
