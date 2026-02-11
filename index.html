@@ -73,6 +73,12 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
   border-radius: 12px; padding: 24px; margin-bottom: 14px;
 }
 
+.agent-card { transition: box-shadow 0.2s ease, border-color 0.2s ease; }
+.agent-card.active-agent {
+  border-color: rgba(0,255,136,0.45);
+  box-shadow: 0 0 0 1px rgba(0,255,136,0.25), 0 0 22px rgba(0,255,136,0.2);
+}
+
 /* Stats */
 .stats-row { display: flex; gap: 14px; margin-bottom: 28px; flex-wrap: wrap; }
 .stat-box {
@@ -309,7 +315,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
         </div>
 
         <!-- Token List -->
-        <div class="card">
+        <div class="card agent-card active-agent">
           <div style="font-size:14px;font-weight:600;margin-bottom:18px;">Vault Assets</div>
           <div class="grid-header" style="grid-template-columns:2fr 1fr 1fr 80px;">
             <span>Asset</span><span style="text-align:right;">Balance</span><span style="text-align:right;">USD Value</span><span></span>
@@ -412,7 +418,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
         </div>
 
         <!-- Agent: DCA Bot Alpha -->
-        <div class="card">
+        <div class="card agent-card active-agent">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:14px;">
               <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dim);font-size:18px;">🤖</div>
@@ -455,7 +461,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
         </div>
 
         <!-- Agent: Rebalancer v2 -->
-        <div class="card">
+        <div class="card agent-card active-agent">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:14px;">
               <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--green-dim);font-size:18px;">🤖</div>
@@ -499,7 +505,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
         </div>
 
         <!-- Agent: Yield Harvester (expired) -->
-        <div class="card" style="opacity:0.6;">
+        <div class="card agent-card" style="opacity:0.6;">
           <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:16px;">
             <div style="display:flex;align-items:center;gap:14px;">
               <div style="width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--red-dim);font-size:18px;">⏸</div>
