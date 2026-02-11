@@ -281,7 +281,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
           <div class="stat-box"><div class="stat-label">Total Balance</div><div class="stat-value" style="color:var(--cyan);">$153,912</div></div>
           <div class="stat-box"><div class="stat-label">Active Agents</div><div class="stat-value" style="color:var(--green);">2</div><div class="stat-sub">1 expired</div></div>
           <div class="stat-box"><div class="stat-label">Today's Volume</div><div class="stat-value" style="color:var(--purple);">$16,320</div><div class="stat-sub">7 orders</div></div>
-          <div class="stat-box"><div class="stat-label">Surplus Captured</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Last 24h</div></div>
+          <div class="stat-box"><div class="stat-label">MEV Savings</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">vs. direct DEX, last 24h</div></div>
         </div>
 
         <!-- Deposit Panel -->
@@ -533,13 +533,13 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
           <div class="stat-box"><div class="stat-label">Orders (24h)</div><div class="stat-value" style="color:var(--cyan);">7</div></div>
           <div class="stat-box"><div class="stat-label">Filled</div><div class="stat-value" style="color:var(--green);">5</div></div>
           <div class="stat-box"><div class="stat-label">Pending</div><div class="stat-value" style="color:var(--yellow);">1</div></div>
-          <div class="stat-box"><div class="stat-label">Total Surplus</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Saved vs. direct DEX</div></div>
+          <div class="stat-box"><div class="stat-label">MEV Savings</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Better pricing vs. direct DEX</div></div>
         </div>
 
         <div class="card" style="padding:0;overflow-x:auto;">
           <div style="min-width:760px;">
             <div class="activity-row" style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border);padding:14px 12px;">
-              <span>Agent</span><span>Action</span><span>From</span><span>To</span><span>Status</span><span>Solver</span><span>Surplus</span><span>Time</span>
+              <span>Agent</span><span>Action</span><span>From</span><span>To</span><span>Status</span><span>Solver</span><span>Savings</span><span>Time</span>
             </div>
             <div class="activity-row">
               <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
@@ -625,7 +625,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
             <div style="font-size:28px;margin-bottom:12px;">⚡</div>
             <div class="step-num">Step 3</div>
             <div class="step-title">Solvers Fill</div>
-            <div class="step-desc">Competitive solvers execute the order at the best available price. Surplus is split back to the vault.</div>
+            <div class="step-desc">Competitive solvers execute the order at the best available price. Better fills than going direct to a DEX, with MEV protection built in.</div>
           </div>
         </div>
 
