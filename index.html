@@ -125,7 +125,7 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
 
 /* Activity table */
 .activity-row {
-  display: grid; grid-template-columns: 130px 55px 140px 120px 75px 85px 75px 80px;
+  display: grid; grid-template-columns: 120px 130px 120px 75px 85px 90px 80px;
   padding: 14px 12px; font-size: 13px; align-items: center;
   border-bottom: 1px solid var(--border);
 }
@@ -284,10 +284,10 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
         </div>
 
         <div class="stats-row">
-          <div class="stat-box"><div class="stat-label">Total Balance</div><div class="stat-value" style="color:var(--cyan);">$153,912</div></div>
-          <div class="stat-box"><div class="stat-label">Active Agents</div><div class="stat-value" style="color:var(--green);">2</div><div class="stat-sub">1 expired</div></div>
+          <div class="stat-box"><div class="stat-label">Current Value</div><div class="stat-value" style="color:var(--cyan);">$153,912</div><div class="stat-sub">Deposited: $150,000</div></div>
+          <div class="stat-box"><div class="stat-label">Total P&L</div><div class="stat-value" style="color:var(--green);">+$3,912</div><div class="stat-sub">+2.6% all time</div></div>
           <div class="stat-box"><div class="stat-label">Today's Volume</div><div class="stat-value" style="color:var(--purple);">$16,320</div><div class="stat-sub">7 orders</div></div>
-          <div class="stat-box"><div class="stat-label">MEV Savings</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">vs. direct DEX, last 24h</div></div>
+          <div class="stat-box"><div class="stat-label">Active Agents</div><div class="stat-value" style="color:var(--green);">2</div><div class="stat-sub">1 expired</div></div>
         </div>
 
         <!-- Deposit Panel -->
@@ -539,68 +539,75 @@ body { background: var(--bg); color: var(--text); font-family: 'DM Sans', system
           <div class="stat-box"><div class="stat-label">Orders (24h)</div><div class="stat-value" style="color:var(--cyan);">7</div></div>
           <div class="stat-box"><div class="stat-label">Filled</div><div class="stat-value" style="color:var(--green);">5</div></div>
           <div class="stat-box"><div class="stat-label">Pending</div><div class="stat-value" style="color:var(--yellow);">1</div></div>
-          <div class="stat-box"><div class="stat-label">MEV Savings</div><div class="stat-value" style="color:var(--green);">+$76.40</div><div class="stat-sub">Better pricing vs. direct DEX</div></div>
+          <div class="stat-box"><div class="stat-label">Trade P&L (24h)</div><div class="stat-value" style="color:var(--green);">+$847</div><div class="stat-sub">Mark-to-market on filled trades</div></div>
         </div>
 
         <div class="card" style="padding:0;overflow-x:auto;">
-          <div style="min-width:760px;">
+          <div style="min-width:720px;">
             <div class="activity-row" style="font-size:10px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;border-bottom:1px solid var(--border);padding:14px 12px;">
-              <span>Agent</span><span>Action</span><span>From</span><span>To</span><span>Status</span><span>Solver</span><span>Savings</span><span>Time</span>
+              <span>Agent</span><span>Trade</span><span>Current Value</span><span>Status</span><span>Solver</span><span>Trade P&L</span><span>Time</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7512 ETH</span>
+              <span style="font-weight:500;">DCA Bot Alpha</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC → 0.75 ETH</span>
+              <span class="mono" style="font-size:12px;">$2,512</span>
               <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
               <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
-              <span class="mono" style="font-size:12px;color:var(--green);">+$12.40</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$12</span>
               <span style="font-size:11px;color:var(--text-muted);">2 min ago</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">0.25 WBTC</span><span class="mono" style="font-size:12px;">8,125 USDC</span>
+              <span style="font-weight:500;">Rebalancer v2</span>
+              <span class="mono" style="font-size:12px;">0.25 WBTC → 8,125 USDC</span>
+              <span class="mono" style="font-size:12px;">$8,125</span>
               <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
               <span style="font-size:12px;color:var(--text-sec);">Wintermute</span>
-              <span class="mono" style="font-size:12px;color:var(--green);">+$34.80</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$475</span>
               <span style="font-size:11px;color:var(--text-muted);">18 min ago</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7480 ETH</span>
+              <span style="font-weight:500;">DCA Bot Alpha</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC → 0.75 ETH</span>
+              <span class="mono" style="font-size:12px;">$2,508</span>
               <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
               <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
-              <span class="mono" style="font-size:12px;color:var(--green);">+$8.20</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$8</span>
               <span style="font-size:11px;color:var(--text-muted);">1 hr ago</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">5,000 USDC</span><span class="mono" style="font-size:12px;">0.0628 WBTC</span>
+              <span style="font-weight:500;">Rebalancer v2</span>
+              <span class="mono" style="font-size:12px;">5,000 USDC → 0.063 WBTC</span>
+              <span class="mono" style="font-size:12px;color:var(--text-muted);">pending</span>
               <span><span class="badge" style="color:var(--yellow);background:var(--yellow-dim);">Pending</span></span>
               <span style="font-size:12px;color:var(--text-sec);">—</span>
               <span class="mono" style="font-size:12px;color:var(--text-muted);">—</span>
               <span style="font-size:11px;color:var(--text-muted);">3 min ago</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">1,000 USDC</span><span class="mono" style="font-size:12px;">ETH</span>
+              <span style="font-weight:500;">DCA Bot Alpha</span>
+              <span class="mono" style="font-size:12px;">1,000 USDC → ETH</span>
+              <span class="mono" style="font-size:12px;color:var(--text-muted);">expired</span>
               <span><span class="badge" style="color:var(--red);background:var(--red-dim);">Expired</span></span>
               <span style="font-size:12px;color:var(--text-sec);">—</span>
               <span class="mono" style="font-size:12px;color:var(--text-muted);">—</span>
               <span style="font-size:11px;color:var(--text-muted);">2 hr ago</span>
             </div>
             <div class="activity-row">
-              <span style="font-weight:500;">Rebalancer v2</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">3,200 DAI</span><span class="mono" style="font-size:12px;">3,195 USDC</span>
+              <span style="font-weight:500;">Rebalancer v2</span>
+              <span class="mono" style="font-size:12px;">3,200 DAI → 3,195 USDC</span>
+              <span class="mono" style="font-size:12px;">$3,195</span>
               <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
               <span style="font-size:12px;color:var(--text-sec);">Orbs Hub</span>
-              <span class="mono" style="font-size:12px;color:var(--green);">+$2.10</span>
+              <span class="mono" style="font-size:12px;color:var(--red);">-$5</span>
               <span style="font-size:11px;color:var(--text-muted);">4 hr ago</span>
             </div>
             <div class="activity-row" style="border-bottom:none;">
-              <span style="font-weight:500;">DCA Bot Alpha</span><span style="color:var(--text-sec);">Swap</span>
-              <span class="mono" style="font-size:12px;">2,500 USDC</span><span class="mono" style="font-size:12px;">0.7601 ETH</span>
+              <span style="font-weight:500;">DCA Bot Alpha</span>
+              <span class="mono" style="font-size:12px;">2,500 USDC → 0.76 ETH</span>
+              <span class="mono" style="font-size:12px;">$2,857</span>
               <span><span class="badge" style="color:var(--green);background:var(--green-dim);">Filled</span></span>
               <span style="font-size:12px;color:var(--text-sec);">Wintermute</span>
-              <span class="mono" style="font-size:12px;color:var(--green);">+$18.90</span>
+              <span class="mono" style="font-size:12px;color:var(--green);">+$357</span>
               <span style="font-size:11px;color:var(--text-muted);">6 hr ago</span>
             </div>
           </div>
